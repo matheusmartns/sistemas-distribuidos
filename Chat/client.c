@@ -11,6 +11,22 @@ void error(char *msg)
     exit(0);
 }
 
+int tstconexao(char *buffer, int n)
+{
+       	if (strcmp(buffer,"Bye\n") == 0) /*Se receber "Bye" do Server entra aqui*/
+        {
+        	if (n < 0) error("ERROR reading from socket");
+        	printf("Here is the message: %s\n",buffer);
+        	printf("\n=== Connection Closed ===\n\n");
+        	return(1);
+        }else{ /*Se receber NÃO receber "Bye" do Server entra aqui*/
+        	if (n < 0) error("ERROR reading from socket");
+        	printf("Here is the message: %s\n",buffer);
+        	return(0);
+        }	
+}
+
+
 int main(int argc, char *argv[])
 {
     int sockfd, portno, n;
@@ -19,6 +35,9 @@ int main(int argc, char *argv[])
     struct hostent *server;
 
     char buffer[256];
+
+    int tst;
+
     if (argc < 3) {
        fprintf(stderr,"usage %s hostname port\n", argv[0]);
        exit(0);
@@ -44,23 +63,30 @@ int main(int argc, char *argv[])
     bzero(buffer,256);
     fgets(buffer,255,stdin);
     n = write(sockfd,buffer,strlen(buffer));
-    char bye[256];
-    strcpy(bye, "Bye");
+    
 
-    while (strcmp(buffer, bye) != 0){
+    while (strcmp(buffer, "Bye\n") != 0){
         if (n < 0) 
              error("ERROR writing to socket");
 
         bzero(buffer,256);
         n = read(sockfd,buffer,255);
-        if (n < 0) 
-             error("ERROR reading from socket");
-        printf("Here is the message: %s\n",buffer);
 
+        if ((tst = tstconexao(buffer,n)) == 1)
+        {
+        	break;
+        }
+        
         printf("\nPlease enter the message: ");
         bzero(buffer,256);
         fgets(buffer,255,stdin);
         n = write(sockfd,buffer,strlen(buffer));
+
+        if(strcmp(buffer,"Bye\n") == 0)
+        {
+        	printf("\n=== Connection Closed ===\n\n");
+        	break;
+        }
     }
     return 0;
 }
