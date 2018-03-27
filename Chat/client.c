@@ -19,7 +19,7 @@ int tstconexao(char *buffer, int n)
         	printf("Here is the message: %s\n",buffer);
         	printf("\n=== Connection Closed ===\n\n");
         	return(1);
-        }else{ /*Se receber NÃO receber "Bye" do Server entra aqui*/
+        }else{ /*Se NÃO receber "Bye" do Server entra aqui*/
         	if (n < 0) error("ERROR reading from socket");
         	printf("Here is the message: %s\n",buffer);
         	return(0);
